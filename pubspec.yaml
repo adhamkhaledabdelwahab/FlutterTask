@@ -1,0 +1,64 @@
+name: flutter_task
+description: "A new Flutter project."
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.3 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.2
+  flutter_bloc: ^8.1.5
+  flutter_screenutil: ^5.9.1
+  hive_flutter: ^1.1.0
+  equatable: ^2.0.5
+  uuid: ^4.4.0
+  get_it: ^7.6.7
+  injectable: ^2.3.5
+  flutter_gen: ^5.5.0+1
+  intl: ^0.18.0
+  flutter_svg: ^2.0.10+1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^2.0.0
+  injectable_generator: ^2.4.0
+  build_runner: ^2.4.7
+  flutter_gen_runner: ^5.5.0+1
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/fonts/
+    - assets/images/
+    - assets/icons/
+
+  fonts:
+    - family: Montserrat-Arabic
+      fonts:
+        - asset: assets/fonts/Montserrat-Arabic-Black-900.otf
+          weight: 900
+        - asset: assets/fonts/Montserrat-Arabic-Bold-700.otf
+          weight: 700
+        - asset: assets/fonts/Montserrat-Arabic-ExtraBold-800.otf
+          weight: 800
+        - asset: assets/fonts/Montserrat-Arabic-ExtraLight-275.otf
+        - asset: assets/fonts/Montserrat-Arabic-Light-300.otf
+          weight: 300
+        - asset: assets/fonts/Montserrat-Arabic-Medium-500.otf
+          weight: 500
+        - asset: assets/fonts/Montserrat-Arabic-Regular-400.otf
+          weight: 400
+        - asset: assets/fonts/Montserrat-Arabic-SemiBold-600.otf
+          weight: 600
+        - asset: assets/fonts/Montserrat-Arabic-Thin-250.otf
