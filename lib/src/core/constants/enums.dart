@@ -11,3 +11,5 @@ enum ImageType {
         (2) || (_) => external,
       };
 }
+
+enum BlocState { initial, loading, success, error }

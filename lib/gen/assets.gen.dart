@@ -65,6 +65,12 @@ class $AssetsFontsGen {
 class $AssetsIconsGen {
   const $AssetsIconsGen();
 
+  /// File path: assets/icons/ic_add_circular_square.svg
+  String get icAddCircularSquare => 'assets/icons/ic_add_circular_square.svg';
+
+  /// File path: assets/icons/ic_arrow_down.svg
+  String get icArrowDown => 'assets/icons/ic_arrow_down.svg';
+
   /// File path: assets/icons/ic_list_view_type.svg
   String get icListViewType => 'assets/icons/ic_list_view_type.svg';
 
@@ -72,7 +78,8 @@ class $AssetsIconsGen {
   String get icViewAll => 'assets/icons/ic_view_all.svg';
 
   /// List of all assets
-  List<String> get values => [icListViewType, icViewAll];
+  List<String> get values =>
+      [icAddCircularSquare, icArrowDown, icListViewType, icViewAll];
 }
 
 class $AssetsImagesGen {

@@ -1,18 +1,19 @@
 import 'package:flutter_task/src/core/response/data_response.dart';
 import 'package:flutter_task/src/domain/entity/category_entity.dart';
+import 'package:flutter_task/src/domain/entity/product_entity.dart';
 import 'package:flutter_task/src/domain/repository/manager_repository.dart';
 import 'package:flutter_task/src/domain/use_case/use_case.dart';
 import 'package:injectable/injectable.dart';
 
 @Injectable()
 class AddProductUserCase
-    implements UseCase<Future<DataResponse<void>>, ProductParams> {
+    implements UseCase<Future<DataResponse<ProductEntity>>, ProductParams> {
   final ManagerRepository _repo;
 
   AddProductUserCase({required ManagerRepository repo}) : _repo = repo;
 
   @override
-  Future<DataResponse<void>> call(ProductParams params) =>
+  Future<DataResponse<ProductEntity>> call(ProductParams params) =>
       _repo.addProduct(params);
 }
 

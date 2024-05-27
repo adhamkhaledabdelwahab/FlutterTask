@@ -9,7 +9,8 @@ import 'package:flutter_task/src/core/bloc_observer.dart';
 import 'package:flutter_task/src/core/dependency_injection/di.dart';
 import 'package:flutter_task/src/core/hive_service/hive_service.dart';
 import 'package:flutter_task/src/core/router/router.dart';
-import 'package:flutter_task/src/presentation/bloc_manager/manager_bloc.dart';
+import 'package:flutter_task/src/presentation/manager/fetch_categories_bloc/fetch_categories_bloc.dart';
+import 'package:flutter_task/src/presentation/manager/fetch_products_bloc/fetch_products_bloc.dart';
 
 void main() {
   runZonedGuarded(
@@ -33,8 +34,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => ManagerBloc(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => FetchProductsBloc(),
+        ),
+        BlocProvider(
+          create: (_) => FetchCategoriesBloc(),
+        ),
+      ],
       child: ScreenUtilInit(
         designSize: const Size(428, 926),
         splitScreenMode: true,

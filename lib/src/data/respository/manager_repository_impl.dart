@@ -16,7 +16,7 @@ class ManagerRepositoryImpl implements ManagerRepository {
   ManagerRepositoryImpl({required LocalDataSource source}) : _source = source;
 
   @override
-  Future<DataResponse<void>> addProduct(ProductParams params) async {
+  Future<DataResponse<ProductEntity>> addProduct(ProductParams params) async {
     try {
       final product = ProductModel(
         id: params.id,
@@ -33,11 +33,12 @@ class ManagerRepositoryImpl implements ManagerRepository {
         imageType: ImageType.external,
       );
       await _source.addProduct(product);
-      return const DataResponse<void>(
+      return DataResponse<ProductEntity>(
         responseType: ResponseType.success,
+        data: product,
       );
     } catch (e) {
-      return DataResponse<void>(
+      return DataResponse<ProductEntity>(
         responseType: ResponseType.error,
         error: ResponseError(
           message: e.toString(),

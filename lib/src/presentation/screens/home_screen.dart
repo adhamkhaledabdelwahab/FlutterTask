@@ -4,11 +4,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_task/gen/assets.gen.dart';
 import 'package:flutter_task/gen/fonts.gen.dart';
+import 'package:flutter_task/src/core/constants/enums.dart';
 import 'package:flutter_task/src/core/constants/palette.dart';
 import 'package:flutter_task/src/core/router/app_router_names.dart';
 import 'package:flutter_task/src/domain/entity/category_entity.dart';
 import 'package:flutter_task/src/domain/entity/product_entity.dart';
-import 'package:flutter_task/src/presentation/bloc_manager/manager_bloc.dart';
+import 'package:flutter_task/src/presentation/manager/fetch_categories_bloc/fetch_categories_bloc.dart';
+import 'package:flutter_task/src/presentation/manager/fetch_products_bloc/fetch_products_bloc.dart';
 import 'package:flutter_task/src/presentation/widgets/category_list_item.dart';
 import 'package:flutter_task/src/presentation/widgets/product_list_item.dart';
 
@@ -25,9 +27,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    ManagerBloc.get(context)
-      ..add(ManagerEventHolder(event: ManagerEvents.fetchProducts))
-      ..add(ManagerEventHolder(event: ManagerEvents.fetchCategories));
+    FetchCategoriesBloc.get(context).add(FetchCategories());
+    FetchProductsBloc.get(context).add(FetchProducts());
     super.initState();
   }
 
@@ -70,144 +71,164 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          SizedBox(
-            height: 145.h,
-            width: double.infinity,
-            child: BlocBuilder<ManagerBloc, ManagerState>(
-              buildWhen: (context, state) =>
-                  state is FetchCategoriesStateHolder,
-              builder: (context, state) {
-                return switch (state.state) {
-                  (BlocState.loading) => _loadingBuilder(),
-                  (BlocState.success) => Builder(builder: (context) {
-                      final data = state.data as List<CategoryEntity>;
-                      return ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) => CategoryListItem(
-                          category: index == 0 ? null : data[index - 1],
-                          selected: (index == 0 && _selectedCategory == null) ||
-                              (index > 0 &&
-                                  data[index - 1].id == _selectedCategory),
-                          onCategorySelected: () {
-                            setState(() {
-                              _selectedCategory =
-                                  index == 0 ? null : data[index - 1].id;
-                            });
-                          },
-                        ),
-                        separatorBuilder: (context, index) => SizedBox(
-                          width: 8.w,
-                        ),
-                        itemCount: data.length + 1,
-                      );
-                    }),
-                  (BlocState.error) => _errorBuilder(
-                      state.error!.message.toString(),
-                    ),
-                  (_) => Container(),
-                };
-              },
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(top: 14.h, bottom: 16.h),
-            child: TextButton.icon(
-              style: TextButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(9.r),
-                ),
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.w)
+            .add(EdgeInsets.only(top: 16.h)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              "التصنيفات",
+              style: TextStyle(
+                fontFamily: FontFamily.montserratArabic,
+                fontWeight: FontWeight.w500,
+                fontSize: 16.sp,
+                color: Palette.black,
               ),
-              onPressed: () {
-                setState(() {
-                  _productViewType = switch (_productViewType) {
-                    ProductListViewType.vertical =>
-                      ProductListViewType.horizontal,
-                    ProductListViewType.horizontal =>
-                      ProductListViewType.vertical,
+            ),
+            SizedBox(
+              height: 9.h,
+            ),
+            SizedBox(
+              height: 145.h,
+              width: double.infinity,
+              child: BlocBuilder<FetchCategoriesBloc, FetchCategoriesState>(
+                buildWhen: (context, state) =>
+                    state is FetchCategoriesStateHolder,
+                builder: (context, state) {
+                  return switch (state.state) {
+                    (BlocState.loading) => _loadingBuilder(),
+                    (BlocState.success) => Builder(builder: (context) {
+                        final data = state.data as List<CategoryEntity>;
+                        return ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) => CategoryListItem(
+                            category: index == 0 ? null : data[index - 1],
+                            selected: (index == 0 &&
+                                    _selectedCategory == null) ||
+                                (index > 0 &&
+                                    data[index - 1].id == _selectedCategory),
+                            onCategorySelected: () {
+                              setState(() {
+                                _selectedCategory =
+                                    index == 0 ? null : data[index - 1].id;
+                              });
+                            },
+                          ),
+                          separatorBuilder: (context, index) => SizedBox(
+                            width: 8.w,
+                          ),
+                          itemCount: data.length + 1,
+                        );
+                      }),
+                    (BlocState.error) => _errorBuilder(
+                        state.error!.message.toString(),
+                      ),
+                    (_) => Container(),
                   };
-                });
-              },
-              icon: SvgPicture.asset(
-                Assets.icons.icListViewType,
-                width: 24.r,
-                height: 24.r,
+                },
               ),
-              label: Text(
-                "تغيير عرض المنتجات الى افقي",
-                style: TextStyle(
-                  fontSize: 12.sp,
-                  fontFamily: FontFamily.montserratArabic,
-                  fontWeight: FontWeight.w400,
-                  color: Palette.red,
+            ),
+            Align(
+              alignment: AlignmentDirectional.centerEnd,
+              child: Padding(
+                padding: EdgeInsets.only(top: 14.h, bottom: 16.h),
+                child: TextButton.icon(
+                  style: TextButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(9.r),
+                    ),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _productViewType = switch (_productViewType) {
+                        ProductListViewType.vertical =>
+                          ProductListViewType.horizontal,
+                        ProductListViewType.horizontal =>
+                          ProductListViewType.vertical,
+                      };
+                    });
+                  },
+                  icon: SvgPicture.asset(
+                    Assets.icons.icListViewType,
+                    width: 24.r,
+                    height: 24.r,
+                  ),
+                  label: Text(
+                    "تغيير عرض المنتجات الى افقي",
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      fontFamily: FontFamily.montserratArabic,
+                      fontWeight: FontWeight.w400,
+                      color: Palette.red,
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
-          Expanded(
-            child: BlocBuilder<ManagerBloc, ManagerState>(
-              buildWhen: (context, state) => state is FetchProductsStateHolder,
-              builder: (context, state) {
-                return switch (state.state) {
-                  (BlocState.loading) => _loadingBuilder(),
-                  (BlocState.success) => Builder(
-                      builder: (context) {
-                        final data = state.data as List<ProductEntity>;
-                        final filterResult = data
-                            .where(
-                              (element) =>
-                                  element.category.id == _selectedCategory ||
-                                  _selectedCategory == null,
-                            )
-                            .toList();
-                        return filterResult.isEmpty
-                            ? Center(
-                                child: Text(
-                                  "لا يوجد منتجات",
-                                  style: TextStyle(
-                                    fontSize: 20.sp,
-                                    fontWeight: FontWeight.w500,
-                                    color: Palette.defaultBlack,
-                                    fontFamily: FontFamily.montserratArabic,
-                                  ),
-                                ),
+            Expanded(
+              child: BlocBuilder<FetchProductsBloc, FetchProductsState>(
+                builder: (context, state) {
+                  return switch (state.state) {
+                    (BlocState.loading) => _loadingBuilder(),
+                    (BlocState.success) => Builder(
+                        builder: (context) {
+                          final data = state.data as List<ProductEntity>;
+                          final filterResult = data
+                              .where(
+                                (element) =>
+                                    element.category.id == _selectedCategory ||
+                                    _selectedCategory == null,
                               )
-                            : ListView.separated(
-                                padding: EdgeInsetsDirectional.only(
-                                  start: 16.w,
-                                  end: 16.w,
-                                  bottom: 45.h +
-                                      MediaQuery.viewPaddingOf(context).bottom,
-                                ),
-                                scrollDirection: switch (_productViewType) {
-                                  ProductListViewType.vertical => Axis.vertical,
-                                  ProductListViewType.horizontal =>
-                                    Axis.horizontal,
-                                },
-                                itemBuilder: (context, index) =>
-                                    ProductListItem(
-                                  product: filterResult[index],
-                                  viewType: _productViewType,
-                                ),
-                                separatorBuilder: (context, index) => SizedBox(
-                                  height: 15.h,
-                                  width: 15.h,
-                                ),
-                                itemCount: filterResult.length,
-                              );
-                      },
-                    ),
-                  (BlocState.error) => _errorBuilder(
-                      state.error!.message.toString(),
-                    ),
-                  (_) => Container(),
-                };
-              },
+                              .toList();
+                          return filterResult.isEmpty
+                              ? Center(
+                                  child: Text(
+                                    "لا يوجد منتجات",
+                                    style: TextStyle(
+                                      fontSize: 20.sp,
+                                      fontWeight: FontWeight.w500,
+                                      color: Palette.defaultBlack,
+                                      fontFamily: FontFamily.montserratArabic,
+                                    ),
+                                  ),
+                                )
+                              : ListView.separated(
+                                  padding: EdgeInsetsDirectional.only(
+                                    bottom: 45.h +
+                                        MediaQuery.viewPaddingOf(context)
+                                            .bottom,
+                                  ),
+                                  scrollDirection: switch (_productViewType) {
+                                    ProductListViewType.vertical =>
+                                      Axis.vertical,
+                                    ProductListViewType.horizontal =>
+                                      Axis.horizontal,
+                                  },
+                                  itemBuilder: (context, index) =>
+                                      ProductListItem(
+                                    product: filterResult[index],
+                                    viewType: _productViewType,
+                                  ),
+                                  separatorBuilder: (context, index) =>
+                                      SizedBox(
+                                    height: 15.h,
+                                    width: 15.h,
+                                  ),
+                                  itemCount: filterResult.length,
+                                );
+                        },
+                      ),
+                    (BlocState.error) => _errorBuilder(
+                        state.error!.message.toString(),
+                      ),
+                    (_) => Container(),
+                  };
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

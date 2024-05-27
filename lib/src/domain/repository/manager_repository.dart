@@ -8,5 +8,5 @@ abstract class ManagerRepository {
 
   DataResponse<List<CategoryEntity>> fetchCategories();
 
-  Future<DataResponse<void>> addProduct(ProductParams params);
+  Future<DataResponse<ProductEntity>> addProduct(ProductParams params);
 }
